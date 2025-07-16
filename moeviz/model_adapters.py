@@ -305,7 +305,7 @@ def get_model_adapter(model_config: Dict[str, Any]) -> ModelAdapter:
 
     if model_type == "qwen":
         return QwenMoEAdapter(model_config)
-    elif model_type == "mixtral":
+    elif model_type in ["moe_goldfish", "mixtral"]:
         return MixtralAdapter(model_config)
     else:
         raise ValueError(f"No adapter available for model type: {model_type}")
