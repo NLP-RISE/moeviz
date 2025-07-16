@@ -31,6 +31,17 @@ poetry run python3 moeviz/server.py
 
 The model must either be downloaded from huggingface (via huggingface-cli) and the model_id should point to the repo id (e.g. ``). Or, a model must be downloaded locally (as a cloned huggingface repo), where the model_id will be the relative path to the directory containing the checkpoint you want to target (e.g. `models/mixtral_5_6gpu/last-checkpoint`). 
 
+When downloading repositories from HuggingFace, make sure you are using [git lfs](https://git-lfs.com/) to pull large files: 
+
+```
+# Make sure git-lfs is installed (https://git-lfs.com)
+git lfs install
+
+# When prompted for a password, use an access token with write permissions.
+# Generate one from your settings: https://huggingface.co/settings/tokens
+git clone https://huggingface.co/i-be-snek/mixtral_5_6gpu
+```
+
 To add a new model to the interface, you need to add its configurations in `moeviz/config.py` and `client/src/config.js`.
 
 ## Configuration
