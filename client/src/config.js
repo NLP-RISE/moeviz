@@ -6,6 +6,8 @@ const defaultConfig = {
   models: {
     'qwen-1.5-moe-a2.7b': { name: 'Qwen1.5-MoE-A2.7B', expertCount: 60 },
     'mixtral-8x7b': { name: 'Mixtral-8x7B', expertCount: 8 },
+    'toy-example': {name: "mixtral_5_toy_model", expertCount: 5 },
+    'goldfish-moe-example': {name: "mixtral_5_6gpu", expertCount: 5 }
   }
 };
 

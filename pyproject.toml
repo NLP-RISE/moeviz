@@ -3,17 +3,23 @@ name = "moeviz"
 version = "0.1.0"
 description = "visualize token routing in mixture-of-experts models"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9,<3.11"
 dependencies = [
     "fastapi>=0.115.12",
     "python-socketio>=5.13.0",
     "torch>=2.6.0",
     "transformers>=4.49.0",
     "uvicorn>=0.34.1",
+    "accelerate (>=1.8.1,<2.0.0)",
+    "protobuf (>=6.31.1,<7.0.0)",
+    "cmake (>=4.0.3,<5.0.0)",
+    "sentencepiece (>=0.2.0,<0.3.0)",
+    "huggingface-hub[cli] (>=0.33.4,<0.34.0)",
+    "hf-transfer (>=0.1.9,<0.2.0)",
 ]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

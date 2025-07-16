@@ -9,7 +9,7 @@ import { serverUrl, modelConfigs } from './config.js'
 // Create HTML content with model selector
 document.querySelector('#app').innerHTML = `
   <div class="container">
-    <h1>moeviz</h1>
+    <h1>MoE-Viz</h1>
     
     <div class="model-selector-container">
       <label for="model-selector">Select Model:</label>

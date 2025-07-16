@@ -7,6 +7,9 @@ visualize token routing in mixture-of-experts models
 ## Setup
 
 The visualization uses `vite` and `d3`, which requires `Node.js version 18+/20+`.
+Download Node.js from https://nodejs.org/en/download (recommended `v20.19.4`).
+
+Then, serve the client:
 
 ```bash
 cd client
@@ -14,15 +17,21 @@ npm install
 npm run dev
 ```
 
-Use `uv` to setup and activate Python environment. Then:
+Use `poetry` to setup and activate Python environment. Then:
 
 ```bash
 # Install in editable mode
-uv pip install -e .
+poetry install
 
 # Start the server
-python3 moeviz/server.py
+poetry run python3 moeviz/server.py
 ```
+
+## Adding new models manually
+
+The model must either be downloaded from huggingface (via huggingface-cli) and the model_id should point to the repo id (e.g. ``). Or, a model must be downloaded locally (as a cloned huggingface repo), where the model_id will be the relative path to the directory containing the checkpoint you want to target (e.g. `models/mixtral_5_6gpu/last-checkpoint`). 
+
+To add a new model to the interface, you need to add its configurations in `moeviz/config.py` and `client/src/config.js`.
 
 ## Configuration
 
@@ -41,8 +50,8 @@ python3 moeviz/server.py
 
 ```bash
 # Run on port 9000
-MOEVIZ_SERVER_PORT=9000 python3 moeviz/server.py
+MOEVIZ_SERVER_PORT=9000 poetry run python3 moeviz/server.py
 
 # Custom server base URL for client (e.g., when behind a proxy)
-MOEVIZ_BASE_URL=https://moeviz.example.com python3 moeviz/server.py
+MOEVIZ_BASE_URL=https://moeviz.example.com poetry run python3 moeviz/server.py
 ```
