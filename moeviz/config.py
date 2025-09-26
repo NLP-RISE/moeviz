@@ -29,19 +29,19 @@ MODEL_CONFIGS: Dict[str, Dict[str, Any]] = {
         "router_location": "model.layers[{layer_id}].block_sparse_moe.gate",
         "top_k": 2,
     },
-    "toy-example": {
-        "name": "mixtral_5_toy_model",
+    "moe_d_het": {
+        "name": "moe_d_het",
         "expert_count": 5,
-        "path": "i-be-snek/mixtral_5_toy_model",
+        "path": "i-be-snek/moe_d_het",
         "model_type": "moe_goldfish",
         "router_type": "router",
         "router_location": "model.layers[{layer_id}].block_sparse_moe.gate",
         "top_k": 2,
     },
-    "goldfish-moe-example": {
-        "name": "mixtral_5_6gpu",
+    "moe_a2": {
+        "name": "moe_a2",
         "expert_count": 5,
-        "path": "models/mixtral_5_6gpu/last-checkpoint/",
+        "path": "i-be-snek/moe_a2",
         "model_type": "moe_goldfish",
         "router_type": "router",
         "router_location": "model.layers[{layer_id}].block_sparse_moe.gate",
@@ -50,7 +50,7 @@ MODEL_CONFIGS: Dict[str, Dict[str, Any]] = {
 }
 
 # Generation settings
-MAX_NEW_TOKENS = int(os.environ.get("MOEVIZ_MAX_NEW_TOKENS", "128"))
+MAX_NEW_TOKENS = int(os.environ.get("MOEVIZ_MAX_NEW_TOKENS", "16"))
 
 # Advanced settings
 THREAD_POOL_WORKERS = int(os.environ.get("MOEVIZ_THREAD_POOL_WORKERS", "1"))

@@ -30,7 +30,7 @@ from moeviz.model_adapters import get_model_adapter
 class GenerateRequest(BaseModel):
     prompt: str
     model: str
-
+    layer_id: int
 
 thread_pool = ThreadPoolExecutor(max_workers=THREAD_POOL_WORKERS)
 
@@ -89,9 +89,11 @@ def load_model(model_id):
     print("model name", model_name)
     try:
         model_name = MODEL_CONFIGS[model_id]["path"]
+        print("loading model")
         model = AutoModelForCausalLM.from_pretrained(
-            model_name, torch_dtype="auto", device_map="auto"
+            model_name, torch_dtype="auto", device_map="auto", 
         )
+        print("loading tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         loaded_models[model_id] = (model, tokenizer)
         return loaded_models[model_id]
@@ -117,6 +119,7 @@ async def disconnect(sid):
 async def generate_text(request: GenerateRequest):
     prompt = request.prompt
     model_id = request.model
+    layer_id = request.layer_id
     print(f"Received prompt: {prompt}")
 
     # Clean up any tokens in the queue
@@ -129,6 +132,7 @@ async def generate_text(request: GenerateRequest):
     if not model or not tokenizer:
         return {"error": f"Failed to load model {model_id}"}
 
+    print(model, tokenizer)
     # Get the model config
     model_config = MODEL_CONFIGS.get(model_id, {})
     if not model_config:
@@ -139,14 +143,14 @@ async def generate_text(request: GenerateRequest):
         adapter = get_model_adapter(model_config)
     except ValueError as e:
         return {"error": str(e)}
+    print("got adapter!")
 
-    # Layer to monitor (currently just using the first layer)
-    layer_id = 0
 
     # Register hooks using the adapter
     hooks = adapter.register_hooks(
         model, layer_id, tokens_queue, routing_queue, tokenizer
     )
+    print("registered hooks!")
 
     # Prepare the prompt
     # We use a system message appropriate for the model type, with fallback to a generic one
@@ -155,7 +159,8 @@ async def generate_text(request: GenerateRequest):
     use_chat = True
 
     if model_config.get("model_type") == "moe_goldfish":
-        text = f"<s> {prompt}"
+        print("MoE model")
+        text = f"{prompt}"
         use_chat = False
 
     elif model_config.get("model_type") == "qwen":
@@ -171,6 +176,7 @@ async def generate_text(request: GenerateRequest):
 
     # Apply chat template - handle differences between models
     if use_chat:
+        print("use chat....")
         try:
             text = tokenizer.apply_chat_template(
                 messages, tokenize=False, add_generation_prompt=True
@@ -185,7 +191,7 @@ async def generate_text(request: GenerateRequest):
 
     def run_generation():
         return model.generate(
-            **model_inputs, max_new_tokens=MAX_NEW_TOKENS, temperature=1, top_k=10
+            **model_inputs, max_new_tokens=MAX_NEW_TOKENS,
         )
 
     # Prevent blocking of event loop
@@ -193,6 +199,7 @@ async def generate_text(request: GenerateRequest):
         generated_ids = await asyncio.get_event_loop().run_in_executor(
             thread_pool, run_generation
         )
+        print(generated_ids)
         generated_text = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
     except Exception as e:
         print(f"Generation error: {e}")

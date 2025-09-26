@@ -258,6 +258,7 @@ class MixtralAdapter(ModelAdapter):
                 "selected_experts": selected_experts.cpu().tolist(),
             }
 
+            print("routing data", routing_data)
             # Add decoded tokens if tokenizer is available
             if tokenizer is not None:
                 try:

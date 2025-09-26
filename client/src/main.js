@@ -2,7 +2,7 @@ import './style.css'
 import * as d3 from 'd3';
 import { io } from 'socket.io-client'
 import { initVisualization, createVisualization, clearVisualization, setExpertCount, setShowTokenIds } from './histogram.js'
-import { serverUrl, modelConfigs } from './config.js'
+import { serverUrl, modelConfigs, layerConfigs } from './config.js'
 
 // modelConfigs are now imported from config.js
 
@@ -18,7 +18,16 @@ document.querySelector('#app').innerHTML = `
           `<option value="${id}" data-expert-count="${config.expertCount}">${config.name}</option>`
         ).join('')}
       </select>
-      <div id="model-info" class="model-info">Expert count: ${modelConfigs['qwen-1.5-moe-a2.7b'].expertCount}</div>
+      <div id="model-info" class="model-info">Expert count: ${modelConfigs['moe_d_het'].expertCount}</div>
+    </div>
+    <div class="layer-selector-container">
+      <label for="layer-selector">Select Layer:</label>
+      <select id="layer-selector" class="layer-selector">
+        ${Object.entries(layerConfigs).map(([id, config]) => 
+          `<option value="${id}">${config.name}</option>`
+        ).join('')}
+      </select>
+      <div id="layer-info" class="layer-info">Current layer: ${layerConfigs['0'].name}</div>
     </div>
     
     <div class="prompt-container">
@@ -56,14 +65,17 @@ const socket = io(serverUrl, {
 });
 let routingData = [];
 let isGenerating = false;
-let currentModel = 'qwen-1.5-moe-a2.7b';
+let currentModel = 'moe_d_het';
+let layer_id = 0
 
 // DOM elements
 const promptInput = document.getElementById('prompt-input');
 const submitButton = document.getElementById('submit-prompt');
 const statusElement = document.getElementById('status');
 const modelSelector = document.getElementById('model-selector');
+const layerSelector = document.getElementById('layer-selector')
 const modelInfo = document.getElementById('model-info');
+const layerInfo = document.getElementById('layer-info');
 let tokenDisplay = document.getElementById('token-display'); // Define as let so we can reassign later
 let showTokenIdsCheckbox = document.getElementById('show-token-ids-checkbox');
 
@@ -86,6 +98,18 @@ modelSelector.addEventListener('change', (e) => {
   routingData = [];
   
   statusElement.textContent = `Model changed to ${e.target.selectedOptions[0].text}`;
+});
+
+// handle model selection change
+layerSelector.addEventListener('change', (e) => {
+  layer_id = e.target.value;
+  layerInfo.textContent = `Current layer: ${layer_id}`;
+  // setExpertCount(expertCount);
+  clearVisualization();
+  
+  routingData = [];
+  
+  statusElement.textContent = `Layer changed to ${e.target.selectedOptions[0].text}`;
 });
 
 // socket.io event listeners
@@ -213,6 +237,7 @@ function processRoutingData(data) {
       const tokenPosition = uniqueTokenCount + tokenIndex;
       
       // create an entry for each expert this token is routed to
+      console.log("layer_id in use:", layer_id)
       expertsForToken.forEach(expertId => {
         transformedData.push({
           layer_id: data.layer_id,
@@ -301,8 +326,9 @@ async function startGeneration(prompt) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
-        prompt,
+        prompt: prompt,
         model: currentModel,
+        layer_id: layer_id
       }),
     });
     

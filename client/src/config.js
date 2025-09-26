@@ -2,14 +2,24 @@
 
 // Default configuration
 const defaultConfig = {
-  serverUrl: 'http://0.0.0.0:8000',
+  serverUrl: 'http://0.0.0.0:9000',
   models: {
-    'qwen-1.5-moe-a2.7b': { name: 'Qwen1.5-MoE-A2.7B', expertCount: 60 },
-    'mixtral-8x7b': { name: 'Mixtral-8x7B', expertCount: 8 },
-    'toy-example': {name: "mixtral_5_toy_model", expertCount: 5 },
-    'goldfish-moe-example': {name: "mixtral_5_6gpu", expertCount: 5 }
-  }
-};
+    'moe_d_het': {name: "moe_d_het", expertCount: 5 },
+    'moe_a2': {name: "moe_a2", expertCount: 5 }
+  },
+  layers: {'0': {name: 0},
+          '1': {name: 1},
+          '2': {name: 2},
+          '3': {name: 3},
+          '4': {name: 4},
+          '5': {name: 5},
+          '6': {name: 6},
+          '7': {name: 7},
+          '8': {name: 8},
+          '9': {name: 9},
+          '10': {name: 10},
+          '11': {name: 11},
+}};
 
 // Load custom config from window if available
 const customConfig = window.__MOEVIZ_CONFIG__ || {};
@@ -27,3 +37,4 @@ export const config = {
 // Export configuration values
 export const serverUrl = config.serverUrl;
 export const modelConfigs = config.models;
+export const layerConfigs = config.layers
