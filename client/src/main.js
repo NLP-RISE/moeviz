@@ -242,7 +242,7 @@ function processRoutingData(data) {
         transformedData.push({
           layer_id: data.layer_id,
           token_id: tokenId,
-          expert_id: expertId,
+          expert_id: expertId + 1,
           token_pos: tokenPosition, // Use consistent token position
           decoded_token: decodedTokens[tokenIndex] || String(tokenId)
         });
