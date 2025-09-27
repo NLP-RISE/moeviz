@@ -187,20 +187,24 @@ async def generate_text(request: GenerateRequest):
             text = f"<s>[INST] {prompt} [/INST]"
 
     # Tokenize input and prepare for generation
-    model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+    model_inputs = tokenizer([text], return_tensors="pt", padding=True).to(model.device)
 
     def run_generation():
-        return model.generate(
+        print("run_generation...")
+        generation = model.generate(
             **model_inputs, max_new_tokens=MAX_NEW_TOKENS,
+            output_router_logits=False,
         )
+        print("generation", generation)
+        return generation
 
     # Prevent blocking of event loop
     try:
         generated_ids = await asyncio.get_event_loop().run_in_executor(
             thread_pool, run_generation
         )
-        print(generated_ids)
         generated_text = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
+        print("generated_text", generated_text)
     except Exception as e:
         print(f"Generation error: {e}")
         for hook in hooks:
@@ -213,9 +217,8 @@ async def generate_text(request: GenerateRequest):
     # Remove hooks
     for hook in hooks:
         hook.remove()
-
+    
     return {"message": generated_text}
-
 
 @app.get("/config")
 async def get_config():
