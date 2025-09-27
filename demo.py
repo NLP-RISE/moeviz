@@ -70,7 +70,9 @@ torch.cuda.synchronize()
 t1 = time.time()
 generated_ids = model.generate(
     **model_inputs,
-    max_new_tokens=512
+    max_new_tokens=512,
+    temperature=0.5,
+    top_p=0.5,
 )
 torch.cuda.synchronize()
 t2 = time.time()
