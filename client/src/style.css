@@ -122,6 +122,14 @@ h1 {
   font-size: 14px;
 }
 
+
+.layer-info {
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 .token-display-container {
   margin: 20px 0;
   width: 100%;
